@@ -7,7 +7,7 @@
 using namespace std;
 
 void main() {
-	string ipAdress = "127.0.0.1";//"192.168.43.54";  // IP Adress сервера
+	string ipAdress = "127.0.0.1";  // IP Adress сервера
 	int port = 5223;				//Порт сервера
 	//string str = "Darling, you look perfect";
 
@@ -15,8 +15,10 @@ void main() {
 	WSADATA data;
 	WORD ver = MAKEWORD(2, 2);
 	int wsResult = WSAStartup(ver, &data);
+
 	if (wsResult != 0) {
 		cerr << "Can't startup winsock" << endl;
+		system("pause");
 		return;
 	}
 
@@ -25,10 +27,11 @@ void main() {
 	if (sock == INVALID_SOCKET) {
 		cerr << "Can't create socket" << endl;
 		WSACleanup();
+		system("pause");
 		return;
 	}
 
-	//Заполняем хинт-структуру (указываем к какому порту(серверу)нужно подключиться)
+	//Заполняем хинт-структуру
 	sockaddr_in hint;
 	hint.sin_family = AF_INET;
 	hint.sin_port = htons(port);
@@ -36,31 +39,33 @@ void main() {
 
 	//Connect to server
 	int conResult = connect(sock, (sockaddr*)&hint, sizeof(hint));
+
 	if (conResult == SOCKET_ERROR) {
 		cerr << "Can't connect to server" << endl;
 		closesocket(sock);
 		WSACleanup();
+		system("pause");
 		return;
 	}
 
-	int random = (rand() % 10 + 2)*1000;
-	Sleep(random);
-
 	//Отправляем и получаем инфу
+
 	char buff[4096];
 	string userInput;
+	int random = (rand() % 10 + 2) * 1000;
 
-	do {
+	//do {
 		//Ждем ввода инфы
 		cout << ">";
 		getline(cin, userInput);
-
+		Sleep(random);
 		if (userInput.size() > 0) {				//Если что-то введено
 
 			//Отправляем текст
 
 			int sendResult = send(sock, userInput.c_str(), userInput.size() + 1, 0);
 			if (sendResult != SOCKET_ERROR) {
+
 				//Ждем ответа
 				ZeroMemory(buff, 4096);
 
@@ -68,18 +73,14 @@ void main() {
 				if (bytesReceived > 0) {
 					//Выводим строку
 					cout << "SERVER>" << string(buff, 0, bytesReceived) << endl;
-					break;
 				}
 			}
-			/*else {
-				cout << "Can't send message to server" << endl;
-			}*/
 		}
-	} while (userInput.size() != 0);
 
-	random = (rand() % 10 + 2) * 1000;
-	Sleep(random);
+	//} while (userInput.size() != 0);
 
+		random = (rand() % 10 + 2) * 1000;
+		Sleep(random);
 	// Close down everything
 	closesocket(sock);
 	WSACleanup();
