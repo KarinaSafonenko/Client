@@ -7,8 +7,14 @@
 using namespace std;
 
 void main() {
-	string ipAdress = "192.168.0.103";  // IP Adress сервера
-	int port = 5223;				//Порт сервера
+	string ipaddress;
+	int port;
+	cout << "Ip-address: ";
+	getline(cin, ipaddress);
+	cout << "Port: ";
+	cin >> port;
+	//string ipAdress = "192.168.43.198";  // IP Adress сервера
+	//int port = 5223;				//Порт сервера
 
 	//Инциализируем винсокет
 	WSADATA data;
@@ -34,7 +40,7 @@ void main() {
 	sockaddr_in hint;
 	hint.sin_family = AF_INET;
 	hint.sin_port = htons(port);
-	inet_pton(AF_INET, ipAdress.c_str(), &hint.sin_addr);
+	inet_pton(AF_INET, ipaddress.c_str(), &hint.sin_addr);
 
 	//Connect to server
 	int conResult = connect(sock, (sockaddr*)&hint, sizeof(hint));
@@ -55,7 +61,8 @@ void main() {
 
 	//Ждем ввода информации
 	cout << ">";
-	getline(cin, userInput);
+	//getline(cin, userInput);
+	cin >> userInput;
 	Sleep(random);
 	if (userInput.size() > 0) {				//Если что-то введено
 
